@@ -1,5 +1,5 @@
 #
-# Makefile for musl (requires GNU make)
+# Makefile for urchin (requires GNU make)
 #
 # This is how simple every makefile should be...
 # No, I take that back - actually most should be less than half this size.
@@ -12,7 +12,7 @@ srcdir = .
 exec_prefix = /usr/local
 bindir = $(exec_prefix)/bin
 
-prefix = /usr/local/musl
+prefix = /usr/local/urchin
 includedir = $(prefix)/include
 libdir = $(prefix)/lib
 syslibdir = /lib
@@ -66,14 +66,14 @@ EMPTY_LIBS = $(EMPTY_LIB_NAMES:%=lib/lib%.a)
 CRT_LIBS = $(addprefix lib/,$(notdir $(CRT_OBJS)))
 STATIC_LIBS = lib/libc.a
 SHARED_LIBS = lib/libc.so
-TOOL_LIBS = lib/musl-gcc.specs
+TOOL_LIBS = lib/urchin-gcc.specs
 ALL_LIBS = $(CRT_LIBS) $(STATIC_LIBS) $(SHARED_LIBS) $(EMPTY_LIBS) $(TOOL_LIBS)
-ALL_TOOLS = obj/musl-gcc
+ALL_TOOLS = obj/urchin-gcc
 
 WRAPCC_GCC = gcc
 WRAPCC_CLANG = clang
 
-LDSO_PATHNAME = $(syslibdir)/ld-musl-$(ARCH)$(SUBARCH).so.1
+LDSO_PATHNAME = $(syslibdir)/ld-urchin-$(ARCH)$(SUBARCH).so.1
 
 -include config.mak
 -include $(srcdir)/arch/$(ARCH)/arch.mak
@@ -177,11 +177,11 @@ lib/%.o: obj/crt/$(ARCH)/%.o
 lib/%.o: obj/crt/%.o
 	cp $< $@
 
-lib/musl-gcc.specs: $(srcdir)/tools/musl-gcc.specs.sh config.mak
+lib/urchin-gcc.specs: $(srcdir)/tools/urchin-gcc.specs.sh config.mak
 	sh $< "$(includedir)" "$(libdir)" "$(LDSO_PATHNAME)" > $@
 
-obj/musl-gcc: config.mak
-	printf '#!/bin/sh\nexec "$${REALGCC:-$(WRAPCC_GCC)}" "$$@" -specs "%s/musl-gcc.specs"\n' "$(libdir)" > $@
+obj/urchin-gcc: config.mak
+	printf '#!/bin/sh\nexec "$${REALGCC:-$(WRAPCC_GCC)}" "$$@" -specs "%s/urchin-gcc.specs"\n' "$(libdir)" > $@
 	chmod +x $@
 
 obj/%-clang: $(srcdir)/tools/%-clang.in config.mak
@@ -220,11 +220,11 @@ install-tools: $(ALL_TOOLS:obj/%=$(DESTDIR)$(bindir)/%)
 
 install: install-libs install-headers install-tools
 
-musl-git-%.tar.gz: .git
-	 git --git-dir=$(srcdir)/.git archive --format=tar.gz --prefix=$(patsubst %.tar.gz,%,$@)/ -o $@ $(patsubst musl-git-%.tar.gz,%,$@)
+urchin-git-%.tar.gz: .git
+	 git --git-dir=$(srcdir)/.git archive --format=tar.gz --prefix=$(patsubst %.tar.gz,%,$@)/ -o $@ $(patsubst urchin-git-%.tar.gz,%,$@)
 
-musl-%.tar.gz: .git
-	 git --git-dir=$(srcdir)/.git archive --format=tar.gz --prefix=$(patsubst %.tar.gz,%,$@)/ -o $@ v$(patsubst musl-%.tar.gz,%,$@)
+urchin-%.tar.gz: .git
+	 git --git-dir=$(srcdir)/.git archive --format=tar.gz --prefix=$(patsubst %.tar.gz,%,$@)/ -o $@ v$(patsubst urchin-%.tar.gz,%,$@)
 
 endif
 

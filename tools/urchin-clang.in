@@ -22,7 +22,7 @@ done
 
 exec $cc \
     -B"$thisdir" \
-    -fuse-ld=musl-clang \
+    -fuse-ld=urchin-clang \
     -static-libgcc \
     -nostdinc \
     --sysroot "$libc" \

@@ -1,33 +1,33 @@
 
-Quick Installation Guide for musl libc
+Quick Installation Guide for urchin libc
 ======================================
 
-There are many different ways to install musl depending on your usage
-case. This document covers only the build and installation of musl by
-itself, which is useful for upgrading an existing musl-based system or
-compiler toolchain, or for using the provided musl-gcc wrapper with an
-existing non-musl-based compiler.
+There are many different ways to install urchin depending on your usage
+case. This document covers only the build and installation of urchin by
+itself, which is useful for upgrading an existing urchin-based system or
+compiler toolchain, or for using the provided urchin-gcc wrapper with an
+existing non-urchin-based compiler.
 
 Building complete native or cross-compiler toolchains is outside the
-scope of this INSTALL file. More information can be found on the musl
+scope of this INSTALL file. More information can be found on the urchin
 website and community wiki.
 
 
 Build Prerequisites
 -------------------
 
-The only build-time prerequisites for musl are GNU Make and a
+The only build-time prerequisites for urchin are GNU Make and a
 freestanding C99 compiler toolchain targeting the desired instruction
 set architecture and ABI, with support for a minimal subset of "GNU C"
 extensions consisting mainly of gcc-style inline assembly, weak
 aliases, hidden visibility, and stand-alone assembly source files.
 
 GCC, LLVM/clang, Firm/cparser, and PCC have all successfully built
-musl, but GCC is the most widely used/tested. Recent compiler (and
+urchin, but GCC is the most widely used/tested. Recent compiler (and
 binutils) versions should be used if possible since some older
-versions have bugs which affect musl.
+versions have bugs which affect urchin.
 
-The system used to build musl does not need to be Linux-based, nor do
+The system used to build urchin does not need to be Linux-based, nor do
 the Linux kernel headers need to be available.
 
 
@@ -35,7 +35,7 @@ the Linux kernel headers need to be available.
 Supported Targets
 -----------------
 
-musl can be built for the following CPU instruction set architecture
+urchin can be built for the following CPU instruction set architecture
 and ABI combinations:
 
 * i386
@@ -112,7 +112,7 @@ and ABI combinations:
 Build and Installation Procedure
 --------------------------------
 
-To build and install musl:
+To build and install urchin:
 
 1. Run the provided configure script from the top-level source
    directory, passing on its command line any desired options.
@@ -128,11 +128,11 @@ compilers, this may not be possible. If detection fails or selects the
 wrong architecture, you can provide an explicit selection on the
 configure command line.
 
-By default, configure installs to a prefix of "/usr/local/musl". This
+By default, configure installs to a prefix of "/usr/local/urchin". This
 differs from the behavior of most configure scripts, and is chosen
 specifically to avoid clashing with libraries already present on the
 system. DO NOT set the prefix to "/usr", "/usr/local", or "/" unless
-you're upgrading libc on an existing musl-based system. Doing so will
+you're upgrading libc on an existing urchin-based system. Doing so will
 break your existing system when you run "make install" and it may be
 difficult to recover.
 
@@ -142,7 +142,7 @@ Notes on Dynamic Linking
 ------------------------
 
 If dynamic linking is enabled, one file needs to be installed outside
-of the installation prefix: /lib/ld-musl-$ARCH.so.1. This is the
+of the installation prefix: /lib/ld-urchin-$ARCH.so.1. This is the
 dynamic linker. Its pathname is hard-coded into all dynamic-linked
 programs, so for the sake of being able to share binaries between
 systems, a consistent location should be used everywhere. Note that
@@ -156,7 +156,7 @@ provide a different location
 
 At runtime, the dynamic linker needs to know the paths to search for
 shared libraries. You should create a text file named
-/etc/ld-musl-$ARCH.path (where $ARCH matches the architecture name
+/etc/ld-urchin-$ARCH.path (where $ARCH matches the architecture name
 used in the dynamic linker) containing a list of directories where you
 want the dynamic linker to search for shared libraries, separated by
 colons or newlines. If the dynamic linker has been installed in a
@@ -172,7 +172,7 @@ in half.
 Checking for Successful Installation
 ------------------------------------
 
-After installing, you should be able to use musl via the musl-gcc
+After installing, you should be able to use urchin via the urchin-gcc
 wrapper. For example:
 
 cat > hello.c <<EOF
@@ -183,14 +183,14 @@ int main()
 	return 0;
 }
 EOF
-/usr/local/musl/bin/musl-gcc hello.c
+/usr/local/urchin/bin/urchin-gcc hello.c
 ./a.out
 
-To configure autoconf-based program to compile and link against musl,
-set the CC variable to musl-gcc when running configure, as in:
+To configure autoconf-based program to compile and link against urchin,
+set the CC variable to urchin-gcc when running configure, as in:
 
-CC=musl-gcc ./configure ...
+CC=urchin-gcc ./configure ...
 
 You will probably also want to use --prefix when building libraries to
-ensure that they are installed under the musl prefix and not in the
+ensure that they are installed under the urchin prefix and not in the
 main host system library directories.
