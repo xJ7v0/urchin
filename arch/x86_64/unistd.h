@@ -200,6 +200,9 @@ static inline int fdatasync(unsigned int fd)
 	return ret;
 }
 
+pid_t fork(void);
+
+/*
 static inline int fork(void);
 static inline int fork(void)
 {
@@ -208,6 +211,7 @@ static inline int fork(void)
 	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
 	return ret;
 }
+*/
 
 static inline int fsync(unsigned int fd);
 static inline int fsync(unsigned int fd)
