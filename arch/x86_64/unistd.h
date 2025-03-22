@@ -376,6 +376,17 @@ static inline int pipe(int *fildes)
 	return ret;
 }
 
+static inline int pipe2(int *fildes, int flags);
+static inline int pipe2(int *fildes, int flags)
+{
+	register int *_fildes __asm__("rdi") = fildes;
+	register int _flags __asm__("rsi") = flags;
+	__asm__("mov {%0, %%eax | eax, %0}" :: "i" (SYS_pipe),  "r" (_fildes), "r" (_flags)  : "eax");
+	int ret;
+	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
+	return ret;
+}
+
 static inline ssize_t read(unsigned int fd, char *buf, size_t count);
 static inline ssize_t read(unsigned int fd, char *buf, size_t count)
 {
