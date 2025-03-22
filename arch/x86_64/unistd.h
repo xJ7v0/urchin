@@ -130,12 +130,12 @@ static inline int dup3(unsigned int oldfd, unsigned int newfd, int flags)
 	return ret;
 }
 
-static inline int execve(const char *filename, const char *const *argv, const char *const *envp);
-static inline int execve(const char *filename, const char *const *argv, const char *const *envp)
+static inline int execve(const char *filename, char *const *argv, char *const *envp);
+static inline int execve(const char *filename, char *const *argv, char *const *envp)
 {
 	register const char *_filename __asm__("rdi") = filename;
-	register const char *const *_argv __asm__("rsi") = argv;
-	register const char *const *_envp __asm__("rdx") = envp;
+	register char *const *_argv __asm__("rsi") = argv;
+	register char *const *_envp __asm__("rdx") = envp;
 	__asm__("mov {%0, %%eax | eax, %0}" :: "i" (SYS_execve),  "r" (_filename), "r" (_argv), "r" (_envp) : "eax");
 	int ret;
 	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
