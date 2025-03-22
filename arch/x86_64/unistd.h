@@ -387,8 +387,8 @@ static inline int pipe2(int *fildes, int flags)
 	return ret;
 }
 
-static inline ssize_t read(unsigned int fd, char *buf, size_t count);
-static inline ssize_t read(unsigned int fd, char *buf, size_t count)
+static inline ssize_t read(unsigned int fd, void *buf, size_t count);
+static inline ssize_t read(unsigned int fd, void *buf, size_t count)
 {
 	register unsigned int _fd __asm__("edi") = fd;
 	register char *_buf __asm__("rsi") = buf;
@@ -518,8 +518,8 @@ static inline int unlink(const char *pathname)
 	return ret;
 }
 
-static inline int unlinkat(int dfd, const char * pathname, int flag);
-static inline int unlinkat(int dfd, const char * pathname, int flag)
+static inline int unlinkat(int dfd, const char *pathname, int flag);
+static inline int unlinkat(int dfd, const char *pathname, int flag)
 {
 	register int _dfd __asm__("edi") = dfd;
 	register const char *_pathname __asm__("rsi") = pathname;
@@ -530,8 +530,8 @@ static inline int unlinkat(int dfd, const char * pathname, int flag)
 	return ret;
 }
 
-static inline ssize_t write(unsigned int fd, const char *buf, size_t count);
-static inline ssize_t write(unsigned int fd, const char *buf, size_t count)
+static inline ssize_t write(unsigned int fd, const void *buf, size_t count);
+static inline ssize_t write(unsigned int fd, const void *buf, size_t count)
 {
 	register unsigned int _fd __asm__("edi") = fd;
 	register const char *_buf __asm__("rsi") = buf;
