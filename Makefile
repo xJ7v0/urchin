@@ -56,7 +56,7 @@ AR      = $(CROSS_COMPILE)ar
 RANLIB  = $(CROSS_COMPILE)ranlib
 INSTALL = $(srcdir)/tools/install.sh
 
-ARCH_INCLUDES = $(wildcard $(srcdir)/arch/$(ARCH)/bits/*.h)
+ARCH_INCLUDES = $(wildcard $(srcdir)/arch/$(ARCH)/bits/*.h) $(srcdir)/arch/$(ARCH)/unistd.h
 GENERIC_INCLUDES = $(wildcard $(srcdir)/arch/generic/bits/*.h)
 INCLUDES = $(wildcard $(srcdir)/include/*.h $(srcdir)/include/*/*.h)
 ALL_INCLUDES = $(sort $(INCLUDES:$(srcdir)/%=%) $(GENH:obj/%=%) $(ARCH_INCLUDES:$(srcdir)/arch/$(ARCH)/%=include/%) $(GENERIC_INCLUDES:$(srcdir)/arch/generic/%=include/%))
@@ -99,10 +99,6 @@ obj/include/bits/alltypes.h: $(srcdir)/arch/$(ARCH)/bits/alltypes.h.in $(srcdir)
 	sed -f $(srcdir)/tools/mkalltypes.sed $(srcdir)/arch/$(ARCH)/bits/alltypes.h.in $(srcdir)/include/alltypes.h.in > $@
 
 obj/include/bits/syscall.h: $(srcdir)/arch/$(ARCH)/bits/syscall.h.in
-	cp $< $@
-	sed -n -e s/__NR_/SYS_/p < $< >> $@
-
-obj/include/unistd.h: $(srcdir)/arch/$(ARCH)/unistd.h
 	cp $< $@
 	sed -n -e s/__NR_/SYS_/p < $< >> $@
 
@@ -211,6 +207,9 @@ $(DESTDIR)$(includedir)/bits/%: obj/include/bits/%
 	$(INSTALL) -D -m 644 $< $@
 
 $(DESTDIR)$(includedir)/%: $(srcdir)/include/%
+	$(INSTALL) -D -m 644 $< $@
+
+$(DESTDIR)$(includedir)/%: $(srcdir)/arch/$(ARCH)/unistd.h
 	$(INSTALL) -D -m 644 $< $@
 
 $(DESTDIR)$(LDSO_PATHNAME): $(DESTDIR)$(libdir)/libc.so
