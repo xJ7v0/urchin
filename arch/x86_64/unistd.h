@@ -43,6 +43,7 @@ extern "C" {
 #include <bits/alltypes.h>
 #include <sys/types.h>
 #include <sys/syscall.h>
+#include <sys/uio.h>
 
 static inline int access(const char *filename, int mode);
 static inline int access(const char *filename, int mode)
@@ -55,6 +56,8 @@ static inline int access(const char *filename, int mode)
 	return ret;
 }
 
+unsigned alarm(unsigned);
+/*
 static inline unsigned int alarm(unsigned int seconds);
 static inline unsigned int alarm(unsigned int seconds)
 {
@@ -64,6 +67,7 @@ static inline unsigned int alarm(unsigned int seconds)
 	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
 	return ret;
 }
+*/
 
 static inline int chdir(const char *filename);
 static inline int chdir(const char *filename)
@@ -87,6 +91,8 @@ static inline int chown(const char *filename, uid_t user, gid_t group)
 	return ret;
 }
 
+int close(int);
+/*
 static inline int close(unsigned int fd);
 static inline int close(unsigned int fd)
 {
@@ -96,19 +102,23 @@ static inline int close(unsigned int fd)
 	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
 	return ret;
 }
-
-static inline int dup(unsigned int fildes);
-static inline int dup(unsigned int fildes)
+*/
+/* For some reason the POSIX standard allows negative file descriptors,
+ * when in linux you can't have one. Unfortuantely I have to change
+ * unsigned int to just int.
+ */
+static inline int dup(int fildes);
+static inline int dup(int fildes)
 {
-	register unsigned int _fildes __asm__("edi") = fildes;
+	register int _fildes __asm__("edi") = fildes;
 	__asm__("mov {%0, %%eax | eax, %0}" :: "i" (SYS_dup),  "r" (_fildes) : "eax");
 	int ret;
 	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
 	return ret;
 }
-
-static inline int dup2(unsigned int oldfd, unsigned int newfd);
-static inline int dup2(unsigned int oldfd, unsigned int newfd)
+/
+static inline int dup2(int oldfd, int newfd);
+static inline int dup2(int oldfd, int newfd)
 {
 	register unsigned int _oldfd __asm__("edi") = oldfd;
 	register unsigned int _newfd __asm__("esi") = newfd;
@@ -118,8 +128,9 @@ static inline int dup2(unsigned int oldfd, unsigned int newfd)
 	return ret;
 }
 
-static inline int dup3(unsigned int oldfd, unsigned int newfd, int flags);
-static inline int dup3(unsigned int oldfd, unsigned int newfd, int flags)
+
+static inline int dup3(int oldfd, int newfd, int flags);
+static inline int dup3(int oldfd, int newfd, int flags)
 {
 	register unsigned int _oldfd __asm__("edi") = oldfd;
 	register unsigned int _newfd __asm__("esi") = newfd;
@@ -142,6 +153,8 @@ static inline int execve(const char *filename, char *const *argv, char *const *e
 	return ret;
 }
 
+int faccessat(int, const char, int, int);
+/*
 static inline int faccessat(int dfd, const char *filename, int mode);
 static inline int faccessat(int dfd, const char *filename, int mode)
 {
@@ -153,7 +166,9 @@ static inline int faccessat(int dfd, const char *filename, int mode)
 	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
 	return ret;
 }
-
+*/
+int fchdir(int);
+/*
 static inline int fchdir(unsigned int fd);
 static inline int fchdir(unsigned int fd)
 {
@@ -163,7 +178,9 @@ static inline int fchdir(unsigned int fd)
 	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
 	return ret;
 }
-
+*/
+int fchown(int, uid_t, gid_t);
+/*
 static inline int fchown(unsigned int fd, uid_t user, gid_t group);
 static inline int fchown(unsigned int fd, uid_t user, gid_t group)
 {
@@ -175,7 +192,7 @@ static inline int fchown(unsigned int fd, uid_t user, gid_t group)
 	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
 	return ret;
 }
-
+*/
 static inline int fchownat(int dfd, const char *filename, uid_t user, gid_t group, int flag);
 static inline int fchownat(int dfd, const char *filename, uid_t user, gid_t group, int flag)
 {
@@ -201,7 +218,6 @@ static inline int fdatasync(unsigned int fd)
 }
 
 pid_t fork(void);
-
 /*
 static inline int fork(void);
 static inline int fork(void)
@@ -212,7 +228,8 @@ static inline int fork(void)
 	return ret;
 }
 */
-
+int fsync(int);
+/*
 static inline int fsync(unsigned int fd);
 static inline int fsync(unsigned int fd)
 {
@@ -222,18 +239,19 @@ static inline int fsync(unsigned int fd)
 	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
 	return ret;
 }
-
-static inline int ftruncate(unsigned int fd, off_t length);
-static inline int ftruncate(unsigned int fd, off_t length)
+*/
+static inline int ftruncate(int fd, off_t length);
+static inline int ftruncate(int fd, off_t length)
 {
-	register unsigned int _fd __asm__("edi") = fd;
+	register int _fd __asm__("edi") = fd;
 	register off_t _length __asm__("esi") = length;
 	__asm__("mov {%0, %%eax | eax, %0}" :: "i" (SYS_ftruncate),  "r" (_fd), "r" (_length) : "eax");
 	int ret;
 	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
 	return ret;
 }
-
+char *getcwd(char *, size_t);
+/*
 static inline char* getcwd(char *buf, unsigned long size);
 static inline char* getcwd(char *buf, unsigned long size)
 {
@@ -244,7 +262,7 @@ static inline char* getcwd(char *buf, unsigned long size)
 	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
 	return ret;
 }
-
+*/
 static inline gid_t getegid(void);
 static inline gid_t getegid(void)
 {
@@ -288,6 +306,30 @@ static inline pid_t getpgid(pid_t pid)
 {
 	register pid_t _pid __asm__("rdi") = pid;
 	__asm__("mov {%0, %%eax | eax, %0}" :: "i" (SYS_getpgid),  "r" (_pid) : "eax");
+	pid_t ret;
+	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
+	return ret;
+}
+
+static inline pid_t getpgrp(void);
+static inline pid_t getpgrp(void)
+{
+        return getpgid(0);
+}
+
+static inline pid_t getpid(void);
+static inline pid_t getpid(void)
+{
+	__asm__("mov {%0, %%eax | eax, %0}" :: "i" (SYS_getpid) : "eax");
+	pid_t ret;
+	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
+	return ret;
+}
+
+static inline pid_t getppid(void);
+static inline pid_t getppid(void)
+{
+	__asm__("mov {%0, %%eax | eax, %0}" :: "i" (SYS_getppid) : "eax");
 	pid_t ret;
 	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
 	return ret;
@@ -348,7 +390,8 @@ static inline int linkat(int olddfd, const char *oldname, int newdfd, const char
 	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
 	return ret;
 }
-
+off_t lseek(int, off_t, int);
+/*
 static inline off_t lseek(unsigned int fd, off_t offset, unsigned int whence);
 static inline off_t lseek(unsigned int fd, off_t offset, unsigned int whence)
 {
@@ -360,7 +403,9 @@ static inline off_t lseek(unsigned int fd, off_t offset, unsigned int whence)
 	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
 	return ret;
 }
-
+*/
+int pause(void);
+/*
 static inline int pause(void);
 static inline int pause(void)
 {
@@ -369,7 +414,7 @@ static inline int pause(void)
 	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
 	return ret;
 }
-
+*/
 static inline int pipe(int *fildes);
 static inline int pipe(int *fildes)
 {
@@ -390,7 +435,8 @@ static inline int pipe2(int *fildes, int flags)
 	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
 	return ret;
 }
-
+ssize_t read(int, void, size_t);
+/*
 static inline ssize_t read(unsigned int fd, void *buf, size_t count);
 static inline ssize_t read(unsigned int fd, void *buf, size_t count)
 {
@@ -402,19 +448,21 @@ static inline ssize_t read(unsigned int fd, void *buf, size_t count)
 	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
 	return ret;
 }
-
-static inline ssize_t readlink(const char *path, char *buf, int bufsiz);
-static inline ssize_t readlink(const char *path, char *buf, int bufsiz)
+*/
+/* Another mismatched type with the linux kernel size_t -> int */
+static inline ssize_t readlink(const char *path, char *buf, size_t bufsiz);
+static inline ssize_t readlink(const char *path, char *buf, size_t bufsiz)
 {
 	register const char *_path __asm__("rdi") = path;
 	register char *_buf __asm__("rsi") = buf;
-	register int _bufsiz __asm__("edx") = bufsiz;
+	register size_t _bufsiz __asm__("edx") = bufsiz;
 	__asm__("mov {%0, %%eax | eax, %0}" :: "i" (SYS_readlink),  "r" (_path), "r" (_buf), "r" (_bufsiz) : "eax");
 	ssize_t ret;
 	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
 	return ret;
 }
-
+ssize_t readlinkat(int, const char *restrict, char *restrict, size_t);
+/*
 static inline ssize_t readlinkat(int dfd, const char *path, char *buf, int bufsiz);
 static inline ssize_t readlinkat(int dfd, const char *path, char *buf, int bufsiz)
 {
@@ -427,6 +475,7 @@ static inline ssize_t readlinkat(int dfd, const char *path, char *buf, int bufsi
 	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
 	return ret;
 }
+*/
 
 static inline int rmdir(const char *pathname);
 static inline int rmdir(const char *pathname)
@@ -437,7 +486,8 @@ static inline int rmdir(const char *pathname)
 	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
 	return ret;
 }
-
+int setgid(gid_t);
+/*
 static inline int setgid(gid_t gid);
 static inline int setgid(gid_t gid)
 {
@@ -447,7 +497,7 @@ static inline int setgid(gid_t gid)
 	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
 	return ret;
 }
-
+*/
 static inline int setpgid(pid_t pid, pid_t pgid);
 static inline int setpgid(pid_t pid, pid_t pgid)
 {
@@ -459,6 +509,12 @@ static inline int setpgid(pid_t pid, pid_t pgid)
 	return ret;
 }
 
+static inline pid_t setpgrp(void);
+static inline pid_t setpgrp(void)
+{
+        return setpgid(0, 0);
+}
+
 static inline pid_t setsid(void);
 static inline pid_t setsid(void)
 {
@@ -467,7 +523,8 @@ static inline pid_t setsid(void)
 	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
 	return ret;
 }
-
+int setuid(uid_t);
+/*
 static inline int setuid(uid_t uid);
 static inline int setuid(uid_t uid)
 {
@@ -477,7 +534,7 @@ static inline int setuid(uid_t uid)
 	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
 	return ret;
 }
-
+*/
 static inline int symlink(const char *old, const char *new);
 static inline int symlink(const char *old, const char *new)
 {
@@ -534,13 +591,25 @@ static inline int unlinkat(int dfd, const char *pathname, int flag)
 	return ret;
 }
 
-static inline ssize_t write(unsigned int fd, const void *buf, size_t count);
-static inline ssize_t write(unsigned int fd, const void *buf, size_t count)
+static inline ssize_t write(int fd, const void *buf, size_t count);
+static inline ssize_t write(int fd, const void *buf, size_t count)
 {
-	register unsigned int _fd __asm__("edi") = fd;
-	register const char *_buf __asm__("rsi") = buf;
+	register int _fd __asm__("edi") = fd;
+	register const void *_buf __asm__("rsi") = buf;
 	register size_t _count __asm__("rdx") = count;
 	__asm__("mov {%0, %%eax | eax, %0}" :: "i" (SYS_write),  "r" (_fd), "r" (_buf), "r" (_count) : "eax");
+	ssize_t ret;
+	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
+	return ret;
+}
+
+static inline ssize_t writev(int fd, const struct iovec *iov, size_t count);
+static inline ssize_t writev(int fd, const struct iovec *iov, size_t count)
+{
+	register int _fd __asm__("edi") = fd;
+	register const struct iovec *_iov __asm__("rsi") = iov;
+	register size_t _count __asm__("rdx") = count;
+	__asm__("mov {%0, %%eax | eax, %0}" :: "i" (SYS_writev),  "r" (_fd), "r" (_iov), "r" (_count) : "eax");
 	ssize_t ret;
 	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
 	return ret;
@@ -561,9 +630,6 @@ int execlp(const char *, const char *, ...);
 int fexecve(int, char *const [], char *const []);
 _Noreturn void _exit(int);
 
-pid_t getpid(void);
-pid_t getppid(void);
-pid_t getpgrp(void);
 char *ttyname(int);
 int ttyname_r(int, char *, size_t);
 int isatty(int);
@@ -592,6 +658,8 @@ size_t confstr(int, char *, size_t);
 #define F_LOCK  1
 #define F_TLOCK 2
 #define F_TEST  3
+int setreuid(uid_t, uid_t);
+/*
 static inline int setreuid(uid_t ruid, uid_t euid);
 static inline int setreuid(uid_t ruid, uid_t euid)
 {
@@ -602,7 +670,9 @@ static inline int setreuid(uid_t ruid, uid_t euid)
 	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
 	return ret;
 }
-
+*/
+int setregid(gid_t, gid_t);
+/*
 static inline int setregid(gid_t rgid, gid_t egid);
 static inline int setregid(gid_t rgid, gid_t egid)
 {
@@ -613,7 +683,7 @@ static inline int setregid(gid_t rgid, gid_t egid)
 	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
 	return ret;
 }
-
+*/
 static inline void sync(void);
 static inline void sync(void)
 {
@@ -656,7 +726,17 @@ int daemon(int, int);
 void setusershell(void);
 void endusershell(void);
 char *getusershell(void);
-int acct(const char *);
+
+static inline int chdir(const char *filename);
+static inline int chdir(const char *filename)
+{
+	register const char *_filename __asm__("rdi") = filename;
+	__asm__("mov {%0, %%eax | eax, %0}" :: "i" (SYS_acct),  "r" (_filename) : "eax");
+	int ret;
+	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
+	return ret;
+}
+
 long syscall(long, ...);
 int execvpe(const char *, char *const [], char *const []);
 int issetugid(void);
