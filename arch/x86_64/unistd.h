@@ -451,7 +451,7 @@ static inline ssize_t readlink(const char *path, char *buf, size_t bufsiz)
 	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
 	return ret;
 }
-ssize_t readlinkat(int, const char *restrict, char *restrict, size_t);
+ssize_t readlinkat(int, const char *__restrict, char *__restrict, size_t);
 /*
 static inline ssize_t readlinkat(int dfd, const char *path, char *buf, int bufsiz);
 static inline ssize_t readlinkat(int dfd, const char *path, char *buf, int bufsiz)
@@ -525,12 +525,12 @@ static inline int setuid(uid_t uid)
 	return ret;
 }
 */
-static inline int symlink(const char *old, const char *new);
-static inline int symlink(const char *old, const char *new)
+static inline int symlink(const char *old, const char *_new);
+static inline int symlink(const char *old, const char *_new)
 {
 	register const char *_old __asm__("rdi") = old;
-	register const char *_new __asm__("rsi") = new;
-	__asm__("mov {%0, %%eax | eax, %0}" :: "i" (SYS_symlink),  "r" (_old), "r" (_new) : "eax");
+	register const char *__new __asm__("rsi") = _new;
+	__asm__("mov {%0, %%eax | eax, %0}" :: "i" (SYS_symlink),  "r" (_old), "r" (__new) : "eax");
 	int ret;
 	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
 	return ret;

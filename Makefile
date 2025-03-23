@@ -34,7 +34,7 @@ CRT_OBJS = $(filter obj/crt/%,$(ALL_OBJS))
 
 AOBJS = $(LIBC_OBJS)
 LOBJS = $(LIBC_OBJS:.o=.lo)
-GENH = obj/include/bits/alltypes.h obj/include/bits/syscall.h
+GENH = obj/include/bits/alltypes.h obj/include/bits/syscall.h obj/include/unistd.h
 GENH_INT = obj/src/internal/version.h
 IMPH = $(addprefix $(srcdir)/, src/internal/stdio_impl.h src/internal/pthread_impl.h src/internal/locale_impl.h src/internal/libc.h)
 
@@ -99,6 +99,10 @@ obj/include/bits/alltypes.h: $(srcdir)/arch/$(ARCH)/bits/alltypes.h.in $(srcdir)
 	sed -f $(srcdir)/tools/mkalltypes.sed $(srcdir)/arch/$(ARCH)/bits/alltypes.h.in $(srcdir)/include/alltypes.h.in > $@
 
 obj/include/bits/syscall.h: $(srcdir)/arch/$(ARCH)/bits/syscall.h.in
+	cp $< $@
+	sed -n -e s/__NR_/SYS_/p < $< >> $@
+
+obj/include/unistd.h: $(srcdir)/arch/$(ARCH)/unistd.h
 	cp $< $@
 	sed -n -e s/__NR_/SYS_/p < $< >> $@
 

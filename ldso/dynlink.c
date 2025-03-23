@@ -1140,9 +1140,9 @@ static struct dso *load_library(const char *name, struct dso *needed_by)
 					prefix_len = 0;
 				}
 				char etc_ldso_path[prefix_len + 1
-					+ sizeof "/etc/ld-musl-" LDSO_ARCH ".path"];
+					+ sizeof "/etc/ld-urchin-" LDSO_ARCH ".path"];
 				snprintf(etc_ldso_path, sizeof etc_ldso_path,
-					"%.*s/etc/ld-musl-" LDSO_ARCH ".path",
+					"%.*s/etc/ld-urchin-" LDSO_ARCH ".path",
 					(int)prefix_len, prefix);
 				fd = open(etc_ldso_path, O_RDONLY|O_CLOEXEC);
 				if (fd>=0) {
@@ -1186,7 +1186,7 @@ static struct dso *load_library(const char *name, struct dso *needed_by)
 
 	/* Avoid the danger of getting two versions of libc mapped into the
 	 * same process when an absolute pathname was used. The symbols
-	 * checked are chosen to catch both musl and glibc, and to avoid
+	 * checked are chosen to catch both urchin and glibc, and to avoid
 	 * false positives from interposition-hack libraries. */
 	decode_dyn(&temp_dso);
 	if (find_sym(&temp_dso, "__libc_start_main", 1).sym &&
@@ -1890,7 +1890,7 @@ void __dls3(size_t *sp, size_t *auxv)
 		}
 		argv[-1] = (void *)(argc - (argv-argv_orig));
 		if (!argv[0]) {
-			dprintf(2, "musl libc (" LDSO_ARCH ")\n"
+			dprintf(2, "urchin libc (" LDSO_ARCH ")\n"
 				"Version %s\n"
 				"Dynamic Program Loader\n"
 				"Usage: %s [options] [--] pathname%s\n",

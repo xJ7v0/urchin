@@ -63,7 +63,7 @@ const struct __locale_map *__get_locale(int cat, const char *val)
 	for (p=loc_head; p; p=p->next)
 		if (!strcmp(val, p->name)) return p;
 
-	if (!libc.secure) path = getenv("MUSL_LOCPATH");
+	if (!libc.secure) path = getenv("URCHIN_LOCPATH");
 	/* FIXME: add a default path? */
 
 	if (path) for (; *path; path=z+!!*z) {
