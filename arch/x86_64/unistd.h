@@ -119,7 +119,6 @@ static inline int dup2(int oldfd, int newfd)
 	return ret;
 }
 
-
 static inline int dup3(int oldfd, int newfd, int flags);
 static inline int dup3(int oldfd, int newfd, int flags)
 {
@@ -144,7 +143,7 @@ static inline int execve(const char *filename, char *const *argv, char *const *e
 	return ret;
 }
 
-int faccessat(int, const char, int, int);
+int faccessat(int, const char *, int, int);
 /*
 static inline int faccessat(int dfd, const char *filename, int mode);
 static inline int faccessat(int dfd, const char *filename, int mode)
@@ -594,6 +593,7 @@ static inline ssize_t write(int fd, const void *buf, size_t count)
 	return ret;
 }
 
+/*
 static inline ssize_t writev(int fd, const struct iovec *iov, size_t count);
 static inline ssize_t writev(int fd, const struct iovec *iov, size_t count)
 {
@@ -605,6 +605,7 @@ static inline ssize_t writev(int fd, const struct iovec *iov, size_t count)
 	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
 	return ret;
 }
+*/
 
 int posix_close(int, int);
 ssize_t pread(int, void *, size_t, off_t);

@@ -24,6 +24,8 @@
 #include "libc.h"
 #include "dynlink.h"
 
+extern char **__environ;
+
 static size_t ldso_page_size;
 /* libc.h may have defined a macro for dynamic PAGE_SIZE already, but
  * PAGESIZE is only defined if it's constant for the arch. */

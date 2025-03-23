@@ -7,6 +7,7 @@
 #include "atomic.h"
 #include "libc.h"
 
+extern char **__environ;
 static void dummy(void) {}
 weak_alias(dummy, _init);
 

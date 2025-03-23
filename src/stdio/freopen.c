@@ -4,6 +4,18 @@
 
 hidden int __dup3(int, int, int);
 
+static inline int __dup3(int oldfd, int newfd, int flags);
+static inline int __dup3(int oldfd, int newfd, int flags)
+{
+	register unsigned int _oldfd __asm__("edi") = oldfd;
+	register unsigned int _newfd __asm__("esi") = newfd;
+	register int _flags __asm__("edx") = flags;
+	__asm__("mov {%0, %%eax | eax, %0}" :: "i" (SYS_dup3),  "r" (_oldfd), "r" (_newfd), "r" (_flags) : "eax");
+	int ret;
+	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
+	return ret;
+}
+
 /* The basic idea of this implementation is to open a new FILE,
  * hack the necessary parts of the new FILE into the old one, then
  * close the new FILE. */
