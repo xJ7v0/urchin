@@ -2,6 +2,8 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+hidden int __dup3(int, int, int);
+
 /* The basic idea of this implementation is to open a new FILE,
  * hack the necessary parts of the new FILE into the old one, then
  * close the new FILE. */

@@ -1,9 +1,10 @@
 #define _GNU_SOURCE
 #include <stdlib.h>
-#include <unistd.h>
 
 static void dummy(char *old, char *new) {}
 weak_alias(dummy, __env_rm_add);
+
+extern char **__environ;
 
 int clearenv()
 {
