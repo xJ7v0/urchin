@@ -69,15 +69,6 @@ static inline unsigned int alarm(unsigned int seconds)
 }
 */
 
-static inline int chdir(const char *filename);
-static inline int chdir(const char *filename)
-{
-	register const char *_filename __asm__("rdi") = filename;
-	__asm__("mov {%0, %%eax | eax, %0}" :: "i" (SYS_chdir),  "r" (_filename) : "eax");
-	int ret;
-	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
-	return ret;
-}
 
 static inline int chown(const char *filename, uid_t user, gid_t group);
 static inline int chown(const char *filename, uid_t user, gid_t group)
@@ -116,7 +107,7 @@ static inline int dup(int fildes)
 	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
 	return ret;
 }
-/
+
 static inline int dup2(int oldfd, int newfd);
 static inline int dup2(int oldfd, int newfd)
 {
@@ -435,7 +426,7 @@ static inline int pipe2(int *fildes, int flags)
 	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
 	return ret;
 }
-ssize_t read(int, void, size_t);
+ssize_t read(int, void *, size_t);
 /*
 static inline ssize_t read(unsigned int fd, void *buf, size_t count);
 static inline ssize_t read(unsigned int fd, void *buf, size_t count)
