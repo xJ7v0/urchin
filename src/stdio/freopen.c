@@ -2,8 +2,6 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-hidden int __dup3(int, int, int);
-
 static inline int __dup3(int oldfd, int newfd, int flags);
 static inline int __dup3(int oldfd, int newfd, int flags)
 {
