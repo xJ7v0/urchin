@@ -197,8 +197,8 @@ static inline int fchownat(int dfd, const char *filename, uid_t user, gid_t grou
 	return ret;
 }
 
-static inline int fdatasync(unsigned int fd);
-static inline int fdatasync(unsigned int fd)
+static inline int fdatasync(int fd);
+static inline int fdatasync(int fd)
 {
 	register unsigned int _fd __asm__("edi") = fd;
 	__asm__("mov {%0, %%eax | eax, %0}" :: "i" (SYS_fdatasync),  "r" (_fd) : "eax");
