@@ -210,7 +210,7 @@ $(DESTDIR)$(includedir)/bits/%: obj/include/bits/%
 $(DESTDIR)$(includedir)/%: $(srcdir)/include/%
 	$(INSTALL) -D -m 644 $< $@
 
-$(DESTDIR)$(includedir)/%: $(srcdir)/arch/$(ARCH)/urchin/%.h
+$(DESTDIR)$(includedir)/%: $(srcdir)/arch/$(ARCH)/urchin/%
 	$(INSTALL) -D -m 644 $< $@
 
 $(DESTDIR)$(LDSO_PATHNAME): $(DESTDIR)$(libdir)/libc.so
