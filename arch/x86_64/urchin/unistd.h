@@ -44,6 +44,28 @@ extern "C" {
 #include <sys/types.h>
 #include <sys/syscall.h>
 #include <sys/uio.h>
+#include <errno.h>
+
+inline long __syscall_ret(unsigned long ret);
+inline long __syscall_ret(unsigned long ret)
+{
+	register long ret __asm__("rdi") = ret;
+
+#ifdef URCHIN_GUARD
+	if (r < -133)
+	{
+		printf("Error: Kernel returned an error number higher than max (133)\n")
+		goto out
+	}
+#endif
+
+	__asm__("test {%%rdi, %%rdi | rdi, rdi}");
+	__asm__("jns out");
+		errno = -ret;
+		return -1;
+	out:
+	return ret;
+}
 
 static inline int access(const char *filename, int mode);
 static inline int access(const char *filename, int mode)
@@ -69,7 +91,6 @@ static inline unsigned int alarm(unsigned int seconds)
 }
 */
 
-
 static inline int chown(const char *filename, uid_t user, gid_t group);
 static inline int chown(const char *filename, uid_t user, gid_t group)
 {
@@ -79,7 +100,7 @@ static inline int chown(const char *filename, uid_t user, gid_t group)
 	__asm__("mov {%0, %%eax | eax, %0}" :: "i" (SYS_chown),  "r" (_filename), "r" (_user), "r" (_group) : "eax");
 	int ret;
 	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
-	return ret;
+	return __syscall_ret(ret);
 }
 
 int close(int);
@@ -140,7 +161,7 @@ static inline int execve(const char *filename, char *const *argv, char *const *e
 	__asm__("mov {%0, %%eax | eax, %0}" :: "i" (SYS_execve),  "r" (_filename), "r" (_argv), "r" (_envp) : "eax");
 	int ret;
 	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
-	return ret;
+	return __syscall_ret(ret);
 }
 
 int faccessat(int, const char *, int, int);
@@ -474,7 +495,7 @@ static inline int rmdir(const char *pathname)
 	__asm__("mov {%0, %%eax | eax, %0}" :: "i" (SYS_rmdir),  "r" (_pathname) : "eax");
 	int ret;
 	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
-	return ret;
+	return __syscall_ret(ret);
 }
 int setgid(gid_t);
 /*
@@ -566,7 +587,7 @@ static inline int unlink(const char *pathname)
 	__asm__("mov {%0, %%eax | eax, %0}" :: "i" (SYS_unlink),  "r" (_pathname) : "eax");
 	int ret;
 	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
-	return ret;
+	return __syscall_ret(ret);
 }
 
 static inline int unlinkat(int dfd, const char *pathname, int flag);
@@ -590,7 +611,7 @@ static inline ssize_t write(int fd, const void *buf, size_t count)
 	__asm__("mov {%0, %%eax | eax, %0}" :: "i" (SYS_write),  "r" (_fd), "r" (_buf), "r" (_count) : "eax");
 	ssize_t ret;
 	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
-	return ret;
+	return __syscall_ret(ret);
 }
 
 /*
@@ -681,6 +702,8 @@ static inline void sync(void)
 {
 	__asm__("mov {%0, %%eax | eax, %0}" :: "i" (SYS_sync) : "eax");
 	__asm__ volatile("syscall" ::: "rcx", "r11");
+	return __syscall_ret(ret);
+
 }
 
 int lockf(int, int, off_t);
