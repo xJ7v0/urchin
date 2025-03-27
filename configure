@@ -30,6 +30,7 @@ System types:
 Optional features:
   --enable-optimize=...   optimize listed components for speed over size [auto]
   --enable-debug          build with debugging information [disabled]
+  --enable-guard          build with guards for things that shouldn't happen [disabled]
   --disable-warnings      build with recommended warnings flags [enabled]
   --enable-wrapper=...    build given urchin toolchain wrapper [auto]
   --disable-shared        inhibit building shared library [enabled]
@@ -130,6 +131,7 @@ build=
 target=
 optimize=auto
 debug=no
+guard=no
 warnings=yes
 shared=auto
 static=yes
@@ -157,6 +159,8 @@ case "$arg" in
 --disable-optimize) optimize=no ;;
 --enable-debug|--enable-debug=yes) debug=yes ;;
 --disable-debug|--enable-debug=no) debug=no ;;
+--enable-guard|--enable-guard=yes) guard=yes ;;
+--disable-guard|--enable-guard=no) guard=no ;;
 --enable-warnings|--enable-warnings=yes) warnings=yes ;;
 --disable-warnings|--enable-warnings=no) warnings=no ;;
 --enable-wrapper|--enable-wrapper=yes) wrapper=detect ;;
@@ -405,6 +409,11 @@ tryflag CFLAGS_MEMOPS -fno-tree-loop-distribute-patterns
 # Enable debugging if requessted.
 #
 test "$debug" = yes && CFLAGS_AUTO=-g
+
+#
+# Enable guards if requessted.
+#
+test "$debug" = yes && GUARD=1 || GUARD=0
 
 #
 # Preprocess asm files to add extra debugging information if debug is
@@ -821,6 +830,7 @@ ALL_TOOLS = $tools
 TOOL_LIBS = $tool_libs
 ADD_CFI = $ADD_CFI
 MALLOC_DIR = $malloc_dir
+URCHIN_GUARD = $guard
 EOF
 test "x$static" = xno && echo "STATIC_LIBS ="
 test "x$shared" = xno && echo "SHARED_LIBS ="
