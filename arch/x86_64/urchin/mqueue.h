@@ -19,7 +19,16 @@ struct mq_attr {
 };
 struct sigevent;
 
-int mq_close(mqd_t);
+static inline int mq_close(mqd_t mqd);
+static inline int mq_close(mqd_t mqd)
+{
+        register int _mqd __asm__("edi") = mqd;
+        __asm__("mov {%0, %%eax | eax, %0}" :: "i" (SYS_close),  "r" (_mqd) : "eax");
+        int ret;
+        __asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
+        return ret;
+}
+
 int mq_getattr(mqd_t, struct mq_attr *);
 int mq_notify(mqd_t, const struct sigevent *);
 mqd_t mq_open(const char *, int, ...);
