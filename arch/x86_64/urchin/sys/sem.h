@@ -53,7 +53,24 @@ struct sembuf {
 };
 
 int semctl(int, int, int, ...);
-int semget(key_t, int, int);
+
+static inline int semget(key_t key, int nsems, int semflg);
+static inline int semget(key_t key, int nsems, int semflg)
+{
+	/* The kernel uses the wrong type for the sem_nsems member
+	 * of struct semid_ds, and thus might not check that the
+	 * n fits in the correct (per POSIX) userspace type, so
+	 * we have to check here. */
+	if (n > USHRT_MAX) return __syscall_ret(-EINVAL);
+	register key_t _key __asm__("edi") = key;
+	register int _nsems __asm__("rsi") = nsems;
+	register int _semflg __asm__("edx") = semflg;
+	__asm__("mov {%0, %%eax | eax, %0}" :: "i" (SYS_semget),  "r" (_key), "r" (_nsems), "r" (_semflg) : "eax");
+	int ret;
+	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
+	return ret;
+}
+
 int semop(int, struct sembuf *, size_t);
 
 #ifdef _GNU_SOURCE

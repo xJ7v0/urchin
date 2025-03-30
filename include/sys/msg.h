@@ -22,12 +22,12 @@ typedef unsigned long msglen_t;
 
 #define __msg_cbytes msg_cbytes
 
-#define MSG_NOERROR 010000
-#define MSG_EXCEPT  020000
+#define MSG_NOERROR	010000
+#define MSG_EXCEPT	020000
 
-#define MSG_STAT (11 | (IPC_STAT & 0x100))
-#define MSG_INFO 12
-#define MSG_STAT_ANY (13 | (IPC_STAT & 0x100))
+#define MSG_STAT	(11 | (IPC_STAT & 0x100))
+#define MSG_INFO	12
+#define MSG_STAT_ANY	(13 | (IPC_STAT & 0x100))
 
 struct msginfo {
 	int msgpool, msgmap, msgmax, msgmnb, msgmni, msgssz, msgtql;
@@ -37,7 +37,26 @@ struct msginfo {
 int msgctl (int, int, struct msqid_ds *);
 int msgget (key_t, int);
 ssize_t msgrcv (int, void *, size_t, long, int);
-int msgsnd (int, const void *, size_t, int);
+
+/*
+int msgsnd(int msqid, const void *msgp, size_t msgsz, int msgflg);
+int msgsnd(int msqid, const void *msgp, size_t msgsz, int msgflg)
+{
+#ifndef SYS_ipc
+        return syscall_cp(SYS_msgsnd, q, m, len, flag);
+#else
+        return syscall_cp(SYS_ipc, IPCOP_msgsnd, q, len, flag, m);
+#endif
+}
+*/
+
+
+
+
+
+
+
+
 
 #if defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
 struct msgbuf {
