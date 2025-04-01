@@ -71,7 +71,18 @@ static inline int semget(key_t key, int nsems, int semflg)
 	return ret;
 }
 
-int semop(int, struct sembuf *, size_t);
+static inline int semop(int semid, struct sembuf *sops, size_t nsops);
+static inline int semop(int semid, struct sembuf *sops, size_t nsops)
+{
+	register int _semid __asm__("edi") = semid;
+	register struct sembuf _sops __asm__("rsi") = sops;
+	register size_t _nsops __asm__("edx") = nsops;
+	__asm__("mov {%0, %%eax | eax, %0}" :: "i" (SYS_semop),  "r" (_semid), "r" (_sops), "r" (_nsops) : "eax");
+	int ret;
+	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
+	return ret;
+}
+
 
 #ifdef _GNU_SOURCE
 int semtimedop(int, struct sembuf *, size_t, const struct timespec *);

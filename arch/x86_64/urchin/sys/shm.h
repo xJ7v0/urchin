@@ -60,7 +60,17 @@ typedef unsigned long shmatt_t;
 
 void *shmat(int, const void *, int);
 int shmctl(int, int, struct shmid_ds *);
-int shmdt(const void *);
+static inline int shmdt(const void *shmaddr);
+static inline int shmdt(const void *shmaddr)
+{
+	if (size > PTRDIFF_MAX) size = SIZE_MAX;
+	register key_t _shmaddr __asm__("edi") = shmaddr;
+	__asm__("mov {%0, %%eax | eax, %0}" :: "i" (SYS_shmdt),  "r" (_shmaddr) : "eax");
+	int ret;
+	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
+	return ret;
+}
+
 
 static inline int shmget(key_t key, size_t size, int flag);
 static inline int shmget(key_t key, size_t size, int flag)
