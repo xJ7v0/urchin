@@ -46,7 +46,7 @@ int posix_fadvise(int fd, off_t base, off_t len, int advice)
 	register int _fd __asm__("edi") = fd;
 	register off_t _base __asm__("rsi") = base;
 	register off_t _len __asm__("edx") = len;
-	register int _advice __asm__("r8d") = advice;
+	register int _advice __asm__("r8") = advice;
 	__asm__("mov {%0, %%eax | eax, %0}" :: "i" (SYS_fadvise64),  "r" (_fd), "r" (_base), "r" (_len), "r" (_advice) : "eax");
 	int ret;
 	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
