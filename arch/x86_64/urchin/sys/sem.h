@@ -15,7 +15,11 @@ extern "C" {
 #include <bits/alltypes.h>
 
 #include <sys/ipc.h>
+
+#include <errno.h>
+#include <limits.h>
 #include <sys/syscall.h>
+#include <urchin.h>
 
 #define SEM_UNDO	0x1000
 #define GETPID		11
@@ -62,7 +66,7 @@ static inline int semget(key_t key, int nsems, int semflg)
 	 * of struct semid_ds, and thus might not check that the
 	 * n fits in the correct (per POSIX) userspace type, so
 	 * we have to check here. */
-	if (n > USHRT_MAX) return __syscall_ret(-EINVAL);
+	if (nsems > USHRT_MAX) return __syscall_ret(-EINVAL);
 	register key_t _key __asm__("edi") = key;
 	register int _nsems __asm__("rsi") = nsems;
 	register int _semflg __asm__("edx") = semflg;

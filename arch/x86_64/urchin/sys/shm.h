@@ -14,6 +14,8 @@ extern "C" {
 #include <bits/alltypes.h>
 
 #include <sys/ipc.h>
+
+#include <stdint.h>
 #include <sys/syscall.h>
 
 #ifdef _GNU_SOURCE

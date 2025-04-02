@@ -4,6 +4,7 @@
 #include <features.h>
 #include <errno.h>
 #include <sys/syscall.h>
+#include "urchin.h"
 #include "syscall_arch.h"
 
 #ifndef SYSCALL_RLIM_INFINITY
@@ -23,8 +24,7 @@
 typedef long syscall_arg_t;
 #endif
 
-hidden long __syscall_ret(unsigned long),
-	__syscall_cp(syscall_arg_t, syscall_arg_t, syscall_arg_t, syscall_arg_t,
+hidden __syscall_cp(syscall_arg_t, syscall_arg_t, syscall_arg_t, syscall_arg_t,
 	             syscall_arg_t, syscall_arg_t, syscall_arg_t);
 
 #define __syscall1(n,a) __syscall1(n,__scc(a))

@@ -5,8 +5,7 @@
 extern "C" {
 #endif
 
-
-
+long __syscall_ret(unsigned long);
 
 #ifdef __cplusplus
 }
