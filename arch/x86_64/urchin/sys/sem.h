@@ -15,6 +15,7 @@ extern "C" {
 #include <bits/alltypes.h>
 
 #include <sys/ipc.h>
+#include <sys/syscall.h>
 
 #define SEM_UNDO	0x1000
 #define GETPID		11

@@ -6,6 +6,7 @@ extern "C" {
 #endif
 
 #include <features.h>
+#include <sys/syscall.h>
 
 #define __NEED_off_t
 #define __NEED_pid_t
@@ -33,7 +34,6 @@ int creat(const char *, mode_t);
 int fcntl(int, int, ...);
 int open(const char *, int, ...);
 int openat(int, const char *, int, ...);
-int posix_fadvise(int, off_t, off_t, int);
 int posix_fallocate(int, off_t, off_t);
 
 /* This is fo future use to make it easier to use macros for register names
@@ -47,12 +47,11 @@ int posix_fadvise(int fd, off_t base, off_t len, int advice)
 	register off_t _base __asm__("rsi") = base;
 	register off_t _len __asm__("edx") = len;
 	register int _advice __asm__("r8d") = advice;
-	__asm__("mov {%0, %%eax | eax, %0}" :: "i" (SYS_fadvise),  "r" (_fd), "r" (_base), "r" (_len), "r" (_advice) : "eax");
+	__asm__("mov {%0, %%eax | eax, %0}" :: "i" (SYS_fadvise64),  "r" (_fd), "r" (_base), "r" (_len), "r" (_advice) : "eax");
 	int ret;
 	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
 	return -ret;
 }
-
 
 
 #define O_SEARCH		O_PATH

@@ -14,6 +14,7 @@ extern "C" {
 #include <bits/alltypes.h>
 
 #include <sys/ipc.h>
+#include <sys/syscall.h>
 
 #ifdef _GNU_SOURCE
 #define __used_ids		used_ids
@@ -58,19 +59,30 @@ extern "C" {
 
 typedef unsigned long shmatt_t;
 
-void *shmat(int, const void *, int);
+void *shmat(int shmid, const void *addr, int shmflag);
+void *shmat(int shmid, const void *addr, int shmflag)
+{
+
+	register int _shmid __asm__("edi") = shmid;
+	register const void *_addr __asm__("rsi") = addr;
+	register int _shmflag __asm__("edx") = shmflag;
+	__asm__("mov {%0, %%eax | eax, %0}" :: "i" (SYS_shmat),  "r" (_shmid), "r" (_addr), "r" (_shmflag) : "eax");
+	void *ret;
+	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
+	return ret;
+}
+
 int shmctl(int, int, struct shmid_ds *);
+
 static inline int shmdt(const void *shmaddr);
 static inline int shmdt(const void *shmaddr)
 {
-	if (size > PTRDIFF_MAX) size = SIZE_MAX;
-	register key_t _shmaddr __asm__("edi") = shmaddr;
+	register const void *_shmaddr __asm__("edi") = shmaddr;
 	__asm__("mov {%0, %%eax | eax, %0}" :: "i" (SYS_shmdt),  "r" (_shmaddr) : "eax");
 	int ret;
 	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
 	return ret;
 }
-
 
 static inline int shmget(key_t key, size_t size, int flag);
 static inline int shmget(key_t key, size_t size, int flag)
@@ -84,11 +96,6 @@ static inline int shmget(key_t key, size_t size, int flag)
 	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
 	return ret;
 }
-
-
-
-
-
 
 #ifdef __cplusplus
 }
