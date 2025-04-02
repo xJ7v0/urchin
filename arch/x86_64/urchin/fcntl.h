@@ -40,8 +40,8 @@ int posix_fallocate(int, off_t, off_t);
  * #if defined(SYSCALL_FADVISE_6_ARG)
  * return -__syscall(SYS_fadvise, fd, advice, __SYSCALL_LL_E(base), __SYSCALL_LL_E(len));
  */
-int posix_fadvise(int fd, off_t base, off_t len, int advice);
-int posix_fadvise(int fd, off_t base, off_t len, int advice)
+static inline int posix_fadvise(int fd, off_t base, off_t len, int advice);
+static inline int posix_fadvise(int fd, off_t base, off_t len, int advice)
 {
 	register int _fd __asm__("edi") = fd;
 	register off_t _base __asm__("rsi") = base;

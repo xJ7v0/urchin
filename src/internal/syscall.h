@@ -24,7 +24,7 @@
 typedef long syscall_arg_t;
 #endif
 
-hidden __syscall_cp(syscall_arg_t, syscall_arg_t, syscall_arg_t, syscall_arg_t,
+hidden long __syscall_cp(syscall_arg_t, syscall_arg_t, syscall_arg_t, syscall_arg_t,
 	             syscall_arg_t, syscall_arg_t, syscall_arg_t);
 
 #define __syscall1(n,a) __syscall1(n,__scc(a))

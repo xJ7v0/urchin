@@ -80,7 +80,7 @@ static inline int semop(int semid, struct sembuf *sops, size_t nsops);
 static inline int semop(int semid, struct sembuf *sops, size_t nsops)
 {
 	register int _semid __asm__("edi") = semid;
-	register struct sembuf _sops __asm__("rsi") = sops;
+	register struct sembuf *_sops __asm__("rsi") = sops;
 	register size_t _nsops __asm__("edx") = nsops;
 	__asm__("mov {%0, %%eax | eax, %0}" :: "i" (SYS_semop),  "r" (_semid), "r" (_sops), "r" (_nsops) : "eax");
 	int ret;
