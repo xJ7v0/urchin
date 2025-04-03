@@ -41,10 +41,12 @@ extern "C" {
 #define __NEED_useconds_t
 
 #include <bits/alltypes.h>
+
+#include <errno.h>
 #include <sys/types.h>
 #include <sys/syscall.h>
 #include <sys/uio.h>
-#include <errno.h>
+#include <urchin.h>
 
 static inline int access(const char *filename, int mode);
 static inline int access(const char *filename, int mode)
@@ -79,12 +81,7 @@ static inline int chown(const char *filename, uid_t user, gid_t group)
 	__asm__("mov {%0, %%eax | eax, %0}" :: "i" (SYS_chown),  "r" (_filename), "r" (_user), "r" (_group) : "eax");
 	int ret;
 	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
-	if (ret > -4096UL)
-	{
-		errno = -ret;
-		return -1;
-	}
-        return ret;
+	return __syscall_ret(ret);
 }
 
 int close(int);
@@ -145,13 +142,7 @@ static inline int execve(const char *filename, char *const *argv, char *const *e
 	__asm__("mov {%0, %%eax | eax, %0}" :: "i" (SYS_execve),  "r" (_filename), "r" (_argv), "r" (_envp) : "eax");
 	int ret;
 	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
-
-	if (ret > -4096UL)
-	{
-		errno = -ret;
-		return -1;
-	}
-        return ret;
+	return __syscall_ret(ret);
 }
 
 int faccessat(int, const char *, int, int);
@@ -315,7 +306,7 @@ static inline pid_t getpgid(pid_t pid)
 static inline pid_t getpgrp(void);
 static inline pid_t getpgrp(void)
 {
-        return getpgid(0);
+	return getpgid(0);
 }
 
 static inline pid_t getpid(void);
@@ -485,13 +476,7 @@ static inline int rmdir(const char *pathname)
 	__asm__("mov {%0, %%eax | eax, %0}" :: "i" (SYS_rmdir),  "r" (_pathname) : "eax");
 	int ret;
 	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
-
-	if (ret > -4096UL)
-	{
-		errno = -ret;
-		return -1;
-	}
-        return ret;
+	return __syscall_ret(ret);
 
 }
 int setgid(gid_t);
@@ -520,7 +505,7 @@ static inline int setpgid(pid_t pid, pid_t pgid)
 static inline pid_t setpgrp(void);
 static inline pid_t setpgrp(void)
 {
-        return setpgid(0, 0);
+	return setpgid(0, 0);
 }
 
 static inline pid_t setsid(void);
@@ -585,12 +570,7 @@ static inline int unlink(const char *pathname)
 	int ret;
 	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
 
-	if (ret > -4096UL)
-	{
-		errno = -ret;
-		return -1;
-	}
-        return ret;
+	return __syscall_ret(ret);
 
 }
 
@@ -615,12 +595,7 @@ static inline ssize_t write(int fd, const void *buf, size_t count)
 	__asm__("mov {%0, %%eax | eax, %0}" :: "i" (SYS_write),  "r" (_fd), "r" (_buf), "r" (_count) : "eax");
 	ssize_t ret;
 	__asm__ volatile("syscall" : "=a" (ret) :: "rcx", "r11");
-	if (ret > -4096UL)
-	{
-		errno = -ret;
-		return -1;
-	}
-        return ret;
+	return __syscall_ret(ret);
 }
 
 /*
